@@ -26,7 +26,7 @@ export default function ComingSoon() {
     setError("");
 
     try {
-      const response = await axios.post("/api/waitlist", { email });
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_WAITLIST_BACKEND_URL}/api/v1/waitlist`, { email });
 
       if (response.status === 200) {
         setSubmitted(true);
