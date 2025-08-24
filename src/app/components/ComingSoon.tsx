@@ -28,7 +28,8 @@ export default function ComingSoon() {
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_WAITLIST_BACKEND_URL}/api/v1/waitlist/join`, { email });
 
-      if (response.status === 200) {
+      // Check for both 200 and 201 status codes (success)
+      if (response.status === 200 || response.status === 201) {
         setSubmitted(true);
         setEmail("");
       } else {
@@ -36,7 +37,12 @@ export default function ComingSoon() {
       }
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Failed to subscribe. Please try again.");
+        // Check if it's a duplicate email error (409)
+        if (err.response?.status === 409) {
+          setError("This email is already on our waitlist!");
+        } else {
+          setError(err.response?.data?.message || "Failed to subscribe. Please try again.");
+        }
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
@@ -127,15 +133,15 @@ export default function ComingSoon() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="flex-1 px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border border-gray-300 bg-white/90 
-                focus:ring-2 focus:ring-[#3e000c] outline-none text-gray-900 text-sm sm:text-base"
+                focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 text-sm sm:text-base"
                 required
                 disabled={isLoading}
               />
               <button
                 type="submit"
                 disabled={isLoading}
-                className="px-4 py-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl bg-[#3e000c] text-[#ffecd1] font-semibold shadow-lg 
-                hover:bg-[#ffe3d1] hover:text-[#3e000c] transition-transform hover:scale-105 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base whitespace-nowrap"
+                className="px-4 py-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl bg-amber-600 text-white font-semibold shadow-lg 
+                hover:bg-amber-500 transition-transform hover:scale-105 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base whitespace-nowrap"
               >
                 {isLoading ? "Processing..." : "Notify Me"}
               </button>
@@ -167,14 +173,14 @@ export default function ComingSoon() {
               className="object-contain mx-auto rounded-full shadow-lg w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24"
             />
 
-            <h2 className={`${dancingScript.className} text-xl sm:text-2xl md:text-3xl font-bold text-[#3e000c] mt-3 sm:mt-4`}>
+            <h2 className={`${dancingScript.className} text-xl sm:text-2xl md:text-3xl font-bold text-amber-600 mt-3 sm:mt-4`}>
               You have joined the exclusive offer list 🎉
             </h2>
             <p className="mt-2 sm:mt-3 text-gray-700 text-sm sm:text-base md:text-lg italic">
               You&apos;ll be notified soon through email about our launch and exclusive offers.
             </p>
             <p className="mt-2 sm:mt-3 text-gray-700 text-sm sm:text-base md:text-lg">
-              Welcome to <span className="font-bold">VASTRAHIRE</span> family!
+              Welcome to <span className="font-bold text-amber-600">VASTRAHIRE</span> family!
             </p>
           </div>
         </div>
